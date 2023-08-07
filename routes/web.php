@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +46,31 @@ Route::post('/register', 'App\Http\Controllers\LoginController@register');
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'admin', 'middleware' => 'role:admin'], function () {
         Route::get('/dashboard', 'App\Http\Controllers\AdminController@dashboard')->name('admin.dashboard');
+
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('/income', [IncomeController::class, 'index'])->name('income.index');
+        Route::post('/income', [IncomeController::class, 'store'])->name('income.store');
+        Route::get('/income/{income}', [IncomeController::class, 'show'])->name('income.show');
+        Route::get('/income/{income}/edit', [IncomeController::class, 'edit'])->name('income.edit');
+        Route::put('/income/{income}', [IncomeController::class, 'update'])->name('income.update');
+        Route::delete('/income/{income}', [IncomeController::class, 'destroy'])->name('income.destroy');
+        
+        Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
+        Route::get('/expense/create', [ExpenseController::class, 'create'])->name('expense.create');
+        Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
+        Route::get('/expense/{income}', [ExpenseController::class, 'show'])->name('expense.show');
+        Route::get('/expense/{income}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
+        Route::put('/expense/{income}', [ExpenseController::class, 'update'])->name('expense.update');
+        Route::delete('/expense/{income}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
+
+        
+
+
     });
 
     Route::group(['prefix' => 'user', 'middleware' => 'role:user'], function () {
