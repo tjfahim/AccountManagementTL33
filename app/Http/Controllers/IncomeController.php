@@ -10,35 +10,31 @@ class IncomeController extends Controller
 {
     public function index()
     {
-        $incomes = Income::all();
+        $incomes = Income::orderBy('created_at', 'desc')->paginate(10);
         $activeCategories = Category::where('status', 'active')->get();
         return view('admin.incomes', compact('incomes','activeCategories'));
     }
 
-    // Show the form for creating a new income
-    public function create()
+    public function store(Request $request)
     {
-        // Add logic to populate any necessary data, e.g., categories, accounts, etc.
-        return view('incomes.create');
-    }
-
-    // Store a newly created income in the database
-    public function store1(Request $request)
-    {
-        $validatedData = $request->validate([
-            'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
-            'category' => 'nullable|string',
-            'amount' => 'required|numeric',
-            'account' => 'nullable|string',
-            'detail' => 'nullable|string',
-            'status' => 'nullable|string',
-        ]);
+        try {
+            $request->validate([
+                'date' => 'required|date',
+                'category' => 'nullable|string',
+                'amount' => 'required|numeric',
+                'account' => 'nullable|string',
+                'detail' => 'nullable|string',
+            ]);
     
-        if ($validatedData) {
+            // Ensure authentication is working and get authenticated user ID
+            $user_id = auth()->id();
+            if (!$user_id) {
+                throw new \Exception('User authentication failed.');
+            }
+    
             $income = new Income();
             $income->date = $request->input('date');
-            $income->user_id = auth()->id();
+            $income->user_id = $user_id;
             $income->category = $request->input('category');
             $income->amount = $request->input('amount');
             $income->account = $request->input('account');
@@ -46,54 +42,45 @@ class IncomeController extends Controller
             $income->status = 'active';
             $income->save();
     
-            return redirect()->route('income.index');
-        } else {
-            return redirect()->back()->withErrors($validatedData)->withInput();
+            return redirect()->route('income.index')->with('success', 'Income Added Successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
-   
     
-
-    // Display the specified income
-    public function show(Income $income)
-    {
-        return view('incomes.show', compact('income'));
-    }
-
-    // Show the form for editing the specified income
+ 
     public function edit(Income $income)
     {
-        // Add logic to populate any necessary data, e.g., categories, accounts, etc.
-        return view('incomes.edit', compact('income'));
+        $activeCategories = Category::where('status', 'active')->get();
+        return view('admin.income_edit', compact('income','activeCategories'));
     }
 
-    // Update the specified income in the database
+    // Update the specified category in the database
     public function update(Request $request, Income $income)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
             'category' => 'nullable|string',
             'amount' => 'required|numeric',
             'account' => 'nullable|string',
             'detail' => 'nullable|string',
-            'status' => 'nullable|string',
+           
         ]);
 
-        $income->update($validatedData);
-
-        // Optionally, you can add some flash message to notify the user about the successful update.
-
-        return redirect()->route('incomes.index');
+   
+        $income->update([
+            'date' => $request->input('date'),
+            'category' => $request->input('category'),
+            'amount' => $request->input('amount'),
+            'account' => $request->input('account'),
+            'detail' => $request->input('detail'),
+        ]);        return redirect()->route('income.index')->with('success', 'Income updated successfully.');
     }
 
-    // Remove the specified income from the database
+    // Remove the specified category from the database
     public function destroy(Income $income)
     {
         $income->delete();
-
-        // Optionally, you can add some flash message to notify the user about the successful deletion.
-
-        return redirect()->route('incomes.index');
+        return redirect()->route('income.index')->with('success', 'Income deleted successfully.');
     }
 }

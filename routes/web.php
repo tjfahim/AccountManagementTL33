@@ -55,19 +55,15 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/income', [IncomeController::class, 'index'])->name('income.index');
         Route::post('/income', [IncomeController::class, 'store'])->name('income.store');
-        Route::get('/income/{income}', [IncomeController::class, 'show'])->name('income.show');
-        Route::get('/income/{income}/edit', [IncomeController::class, 'edit'])->name('income.edit');
         Route::put('/income/{income}', [IncomeController::class, 'update'])->name('income.update');
+        Route::get('/income/{income}/edit', [IncomeController::class, 'edit'])->name('income.edit');
         Route::delete('/income/{income}', [IncomeController::class, 'destroy'])->name('income.destroy');
         
         Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
-        Route::get('/expense/create', [ExpenseController::class, 'create'])->name('expense.create');
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
-        Route::get('/expense/{income}', [ExpenseController::class, 'show'])->name('expense.show');
-        Route::get('/expense/{income}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
-        Route::put('/expense/{income}', [ExpenseController::class, 'update'])->name('expense.update');
-        Route::delete('/expense/{income}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
-
+        Route::put('/expense/{expense}', [ExpenseController::class, 'update'])->name('expense.update');
+        Route::get('/expense/{expense}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
+        Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
         
 
 

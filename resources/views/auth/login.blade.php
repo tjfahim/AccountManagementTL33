@@ -53,32 +53,36 @@
     <div class="container">
 
 
-      <form style="width: 50%;margin-left:30%;margin-top:10%;" method="post" action="{{ route('login') }}">
-        @csrf <!-- CSRF token for form submission security -->
-    
-        <!-- Email input -->
-        <h2 class="mb-2 text-center">Login Form</h2>
-        <div class="form-outline mb-4">
-            <label class="form-label" for="form2Example1">Email address</label>
-            <input type="email" id="form2Example1" name="email" class="form-control" />
-            <!-- Add the name attribute "name" to the email input field -->
-        </div>
-    
-        <!-- Password input -->
-        <div class="form-outline mb-4">
-            <label class="form-label" for="form2Example2">Password</label>
-            <input type="password" id="form2Example2" name="password" class="form-control" />
-            <!-- Add the name attribute "password" to the password input field -->
-        </div>
-    
-        <!-- Submit button -->
-        <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
-    
-        <!-- Register button -->
-        <div class="text-center">
-            <p>Not a member? <a href="{{ route('register') }}">Register</a></p>
-        </div>
-    </form>
+        <form style="width: 50%;margin-left:30%;margin-top:10%;" method="post" action="{{ route('login') }}">
+            @csrf <!-- CSRF token for form submission security -->
+        
+            <!-- Email input -->
+            <h2 class="mb-2 text-center">Login Form</h2>
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form2Example1">Email address</label>
+                <input type="email" id="form2Example1" name="email" class="form-control" />
+                @error('email')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form2Example2">Password</label>
+                <input type="password" id="form2Example2" name="password" class="form-control" />
+                @error('password')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+        
+            <!-- Register button -->
+            <div class="text-center">
+                <p>Not a member? <a href="{{ route('register') }}">Register</a></p>
+            </div>
+        </form>
+        
     
 
 </div>

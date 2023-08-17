@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -22,10 +23,18 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
+    
+        $user = User::where('email', $credentials['email'])->first();
+    
+        if (!$user) {
+            // Email not found
+            return redirect()->back()->withInput()->withErrors(['email' => 'Email not found']);
+        }
+    
+        if (Hash::check($credentials['password'], $user->password)) {
+            // Password is correct
+            Auth::login($user);
+    
             // Redirect to the appropriate dashboard based on the user's role
             if ($user->role === 'admin') {
                 return redirect()->route('admin.dashboard');
@@ -33,12 +42,11 @@ class LoginController extends Controller
                 return redirect()->route('user.dashboard');
             }
         }
-
-        // Failed login attempt, redirect back with errors
-        return redirect()->back()->withInput()->withErrors(['email' => 'Invalid credentials']);
+    
+        // Wrong password
+        return redirect()->back()->withInput()->withErrors(['password' => 'Wrong password']);
     }
-
-
+    
     public function register(Request $request)
 {
     // Validation rules for the registration form

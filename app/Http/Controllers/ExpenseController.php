@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 
@@ -9,66 +10,78 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::all();
-        return view('admin.expenses', compact('expenses'));
+        $expenses = Expense::orderBy('created_at', 'desc')->paginate(10); // 10 expenses per page
+        $activeCategories = Category::where('status', 'active')->get();
+        return view('admin.expenses', compact('expenses', 'activeCategories'));
     }
 
-    // Show the form for creating a new expense
-    public function create()
-    {
-        return view('expenses.create');
-    }
-
-    // Store a newly created expense in the database
     public function store(Request $request)
     {
-        $request->validate([
-            'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
-            'category' => 'nullable|string',
-            'amount' => 'required|numeric|min:0',
-            'account' => 'nullable|string',
-            'detail' => 'nullable|string',
-            'status' => 'nullable|string',
-        ]);
-
-        Expense::create($request->all());
-        return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
+        try {
+            $request->validate([
+                'date' => 'required|date',
+                'category' => 'nullable|string',
+                'amount' => 'required|numeric',
+                'account' => 'nullable|string',
+                'detail' => 'nullable|string',
+            ]);
+    
+            // Ensure authentication is working and get authenticated user ID
+            $user_id = auth()->id();
+            if (!$user_id) {
+                throw new \Exception('User authentication failed.');
+            }
+    
+            $expense = new Expense();
+            $expense->date = $request->input('date');
+            $expense->user_id = $user_id;
+            $expense->category = $request->input('category');
+            $expense->amount = $request->input('amount');
+            $expense->account = $request->input('account');
+            $expense->detail = $request->input('detail');
+            $expense->status = 'active';
+            $expense->save();
+    
+            return redirect()->route('expense.index')->with('success', 'Expense Added Successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
     }
-
-    // Display the specified expense
-    public function show(Expense $expense)
+    
+ 
+    public function edit(expense $expense)
     {
-        return view('expenses.show', compact('expense'));
+        $activeCategories = Category::where('status', 'active')->get();
+        return view('admin.expense_edit', compact('expense','activeCategories'));
     }
 
-    // Show the form for editing the specified expense
-    public function edit(Expense $expense)
-    {
-        return view('expenses.edit', compact('expense'));
-    }
-
-    // Update the specified expense in the database
+    // Update the specified category in the database
     public function update(Request $request, Expense $expense)
     {
         $request->validate([
             'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
             'category' => 'nullable|string',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric',
             'account' => 'nullable|string',
             'detail' => 'nullable|string',
-            'status' => 'nullable|string',
         ]);
-
-        $expense->update($request->all());
-        return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
+    
+        $expense->update([
+            'date' => $request->input('date'),
+            'category' => $request->input('category'),
+            'amount' => $request->input('amount'),
+            'account' => $request->input('account'),
+            'detail' => $request->input('detail'),
+        ]);
+    
+        return redirect()->route('expense.index')->with('success', 'Expense updated successfully.');
     }
+    
 
-    // Remove the specified expense from the database
+    // Remove the specified category from the database
     public function destroy(Expense $expense)
     {
         $expense->delete();
-        return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
+        return redirect()->route('expense.index')->with('success', 'Expense deleted successfully.');
     }
 }

@@ -98,14 +98,13 @@
             <td>{{ $income->user_id }}</td>
             <td>{{ $income->category }}</td>
             <td>{{ $income->amount }}</td>
-            <td>{{ $income->account }}</td>
+            <td>{{ $income->account }}</td>     
             <td>{{ $income->detail }}</td>
-            <td>{{ $income->status }}</td>
             <td>
-                <a href="{{ route('editIncome', ['id' => $income->id]) }}" class="btn btn-primary btn-sm" style="display: inline-block;">Edit</a>
+                <a href="{{ route('income.edit', ['income' => $income->id]) }}" class="btn btn-primary btn-sm" style="display: inline-block;">Edit</a>
 
                 <!-- Delete button -->
-                <form action="{{ route('deleteIncome', ['id' => $income->id]) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this income?')" style="display: inline-block;">
+                <form action="{{ route('income.destroy', ['income' => $income->id]) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this income?')" style="display: inline-block;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -115,8 +114,9 @@
         @endforeach
     </tbody>
 </table>
-
-
+<div class="pagination">
+    {{ $incomes->links('pagination::bootstrap-4') }}
+</div>
 @endsection
 
 
