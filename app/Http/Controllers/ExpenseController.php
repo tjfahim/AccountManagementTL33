@@ -10,9 +10,10 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::orderBy('created_at', 'desc')->paginate(10); // 10 expenses per page
+        $expenses = Expense::with('user')->orderBy('created_at', 'desc')->paginate(10); // 10 expenses per page
         $activeCategories = Category::where('status', 'active')->get();
-        return view('admin.expenses', compact('expenses', 'activeCategories'));
+        $totalAmount = $expenses->sum('amount');
+        return view('admin.expenses', compact('expenses', 'activeCategories','totalAmount'));
     }
 
     public function store(Request $request)

@@ -27,7 +27,7 @@
                             <select id="category" name="category" class="form-control" required>
                                 <option value="">Select Category</option>
                                 @foreach ($activeCategories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->name }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -95,7 +95,7 @@
         <tr>
             <th scope="row">{{ $expense->id }}</th>
             <td>{{ $expense->date }}</td>
-            <td>{{ $expense->user_id }}</td>
+            <td>{{ $expense->user->name }}</td>
             <td>{{ $expense->category }}</td>
             <td>{{ $expense->amount }}</td>
             <td>{{ $expense->account }}</td>     
@@ -112,6 +112,10 @@
             </td>
         </tr>
         @endforeach
+        <tr>
+            <th scope="col" colspan="4">Total Amount for page {{ $expenses->currentPage() }}</th>
+            <td colspan="4">{{ $totalAmount }} tk</td>
+        </tr>
     </tbody>
 </table>
 <div class="pagination">

@@ -15,7 +15,7 @@
                         <select id="category" name="category" class="" required>
                             <option value="">Select Category</option>
                             @foreach ($activeCategories as $category)
-                                <option value="{{ $category->id }}" {{ $category->id == $income->category ? 'selected' : '' }}>
+                                <option value="{{ $category->name }}" {{ $category->id == $income->category ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach

@@ -10,9 +10,10 @@ class IncomeController extends Controller
 {
     public function index()
     {
-        $incomes = Income::orderBy('created_at', 'desc')->paginate(10);
+        $incomes = Income::with('user')->orderBy('created_at', 'desc')->paginate(10);
         $activeCategories = Category::where('status', 'active')->get();
-        return view('admin.incomes', compact('incomes','activeCategories'));
+        $totalAmount = $incomes->sum('amount');
+        return view('admin.incomes', compact('incomes','activeCategories','totalAmount'));
     }
 
     public function store(Request $request)

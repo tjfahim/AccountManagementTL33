@@ -66,7 +66,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
         
 
-
     });
 
     Route::group(['prefix' => 'user', 'middleware' => 'role:user'], function () {
