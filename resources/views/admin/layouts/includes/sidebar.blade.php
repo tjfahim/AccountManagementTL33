@@ -22,6 +22,12 @@
                 <span>Expense</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link " href="{{ route('report.index')}}">
+                <i class="bi bi-grid"></i>
+                <span>Report</span>
+            </a>
+        </li>
 
         
 

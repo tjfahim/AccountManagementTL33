@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,23 +20,8 @@ use App\Http\Controllers\ExpenseController;
 */
 
 
-Route::get('/', function () {
-    // Check if the user is authenticated
-    if (Auth::check()) {
-        $user = Auth::user();
-        $role = $user->role; // Get the user's role
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Check the user's role and redirect accordingly
-        if ($role === 'admin') {
-            return view('admin.dashboard'); // Render the admin dashboard view
-        } elseif ($role === 'user') {
-            return view('user.dashboard'); // Render the user dashboard view
-        }
-    }
-
-    // Redirect to the login page if the user is not authenticated or has no role
-    return redirect('/login');
-});
 
 
 Route::get('/login', 'App\Http\Controllers\LoginController@showLoginForm')->name('login');
@@ -64,6 +51,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/expense/{expense}', [ExpenseController::class, 'update'])->name('expense.update');
         Route::get('/expense/{expense}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
         Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
+
+        Route::get('report', [ReportController::class, 'index'])->name('report.index');
+
         
 
     });
