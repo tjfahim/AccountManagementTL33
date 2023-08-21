@@ -16,7 +16,7 @@ class ReportController extends Controller
         $toDate = $request->input('to_date');
         $category = $request->input('category');
 
-        if (empty($fromDate) && empty($toDate)) {
+        if (empty($fromDate) || empty($toDate)) {
             $fromDate = Carbon::now()->startOfMonth();
             $toDate = Carbon::now()->endOfMonth();
         } else {
