@@ -22,8 +22,6 @@ use App\Http\Controllers\ReportController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-
-
 Route::get('/login', 'App\Http\Controllers\LoginController@showLoginForm')->name('login');
 Route::post('/login', 'App\Http\Controllers\LoginController@login');
 Route::post('/logout', 'App\Http\Controllers\LoginController@logout')->name('logout');
@@ -50,9 +48,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
         Route::put('/expense/{expense}', [ExpenseController::class, 'update'])->name('expense.update');
         Route::get('/expense/{expense}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
-        Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
+        Route::post('/expense/{expense}', [ExpenseController::class, 'delete'])->name('expense.delete');
 
-        Route::get('report', [ReportController::class, 'index'])->name('report.index');
+        Route::match(['get', 'post'], '/report', [ReportController::class, 'index'])->name('report.index');
 
         
 

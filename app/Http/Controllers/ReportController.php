@@ -5,32 +5,56 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Income;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
- 
-        $incomes = Income::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $category = $request->input('category');
+
+        if (empty($fromDate) && empty($toDate)) {
+            $fromDate = Carbon::now()->startOfMonth();
+            $toDate = Carbon::now()->endOfMonth();
+        } else {
+            // Parse the provided dates using Carbon
+            $fromDate = Carbon::parse($fromDate);
+            $toDate = Carbon::parse($toDate);
+        }
+
+        $Incomequery = Income::whereBetween('date', [$fromDate, $toDate])
+        ->where('status', 'active')
+        ->orderBy('created_at', 'desc');
+        if (!empty($category)) {
+            $Incomequery->where('category', $category);
+        }
+        $Expensequery = Expense::whereBetween('date', [$fromDate, $toDate])
+        ->where('status', 'active')
+        ->orderBy('created_at', 'desc');
+        if (!empty($category)) {
+            $Expensequery->where('category', $category);
+        }
+        $incomessearch = $Incomequery->paginate(10);
+        $Expensesearch = $Expensequery->paginate(10);
+
+        $totalIncome = $incomessearch->sum('amount');
+        $totalIncomeWithoutCash = $incomessearch->where('account', '!=', 'cash')->sum('amount');
+        $totalIncomeWithCash = $incomessearch->where('account', 'cash')->sum('amount');
+
+        $totalExpense = $Expensesearch->sum('amount');
+        $totalexpenseWithoutCash = $Expensesearch->where('account', '!=', 'cash')->sum('amount');
+        $totalexpenseWithCash = $Expensesearch->where('account', 'cash')->sum('amount');
         
-        $activeCategories = Category::where('status', 'active')->get();
-        $cash_income = Income::where('account', 'cash')->get();
-        $bank_income = Income::where('account', '!=', 'cash')->get();
-        $totalAmountincome = $incomes->sum('amount');
-        $totalAmountincome_cash = $cash_income->sum('amount');
-        $totalAmountincome_bank = $bank_income->sum('amount');
+        $availableTotal = $totalIncome - $totalExpense;
+        $availableTotalcash = $totalIncomeWithCash - $totalexpenseWithCash;
+        $availableTotalbank = $totalIncomeWithoutCash - $totalexpenseWithoutCash;
 
-        $expenses = Expense::with('user')->orderBy('created_at', 'desc')->paginate(10);
-        $cash_expense = Expense::where('account', 'cash')->get();
-        $bank_expense = Expense::where('account', '!=', 'cash')->get();
-        $activeCategories = Category::where('status', 'active')->get();
-        $totalAmountexpense = $expenses->sum('amount');  
-        $totalAmountexpense_cash = $cash_expense->sum('amount');
-        $totalAmountexpense_bank = $bank_expense->sum('amount');
-
-        return view('admin.report', compact('incomes','activeCategories','totalAmountexpense','expenses', 'activeCategories','totalAmountincome','totalAmountincome_bank','totalAmountincome_cash','totalAmountexpense_cash','totalAmountexpense_bank'));
-
+        $category_list=Category::get();
+    
+        return view('admin.report', compact('availableTotal','Expensesearch','totalExpense','totalIncome','totalIncomeWithoutCash','totalIncomeWithCash','totalexpenseWithoutCash','totalexpenseWithCash','availableTotalcash','availableTotalbank','incomessearch','category_list','fromDate','toDate','category'));
            
     
     }

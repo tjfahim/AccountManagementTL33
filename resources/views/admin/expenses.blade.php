@@ -104,9 +104,9 @@
                 <a href="{{ route('expense.edit', ['expense' => $expense->id]) }}" class="btn btn-primary btn-sm" style="display: inline-block;">Edit</a>
 
                 <!-- Delete button -->
-                <form action="{{ route('expense.destroy', ['expense' => $expense->id]) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this expense?')" style="display: inline-block;">
+                <form action="{{ route('expense.delete', ['expense' => $expense->id]) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this expense?')" style="display: inline-block;">
                     @csrf
-                    @method('DELETE')
+                    @method('post')
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 </form>
             </td>

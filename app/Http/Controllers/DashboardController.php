@@ -21,13 +21,15 @@ class DashboardController extends Controller
 
             $incomes = Income::with('user')
             ->whereMonth('created_at', $currentMonth)
+            ->where('status', 'active')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
             $expenses = Expense::with('user')
             ->whereMonth('created_at', $currentMonth)
+            ->where('status', 'active')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
             $totalIncome = $incomes->sum('amount');
             $totalIncomeWithoutCash = $incomes->where('account', '!=', 'cash')->sum('amount');

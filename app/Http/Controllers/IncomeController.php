@@ -10,7 +10,7 @@ class IncomeController extends Controller
 {
     public function index()
     {
-        $incomes = Income::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        $incomes = Income::with('user')->where('status', 'active')->orderBy('created_at', 'desc')->paginate(10);
         $activeCategories = Category::where('status', 'active')->get();
         $totalAmount = $incomes->sum('amount');
         return view('admin.incomes', compact('incomes','activeCategories','totalAmount'));
@@ -81,7 +81,13 @@ class IncomeController extends Controller
     // Remove the specified category from the database
     public function destroy(Income $income)
     {
-        $income->delete();
-        return redirect()->route('income.index')->with('success', 'Income deleted successfully.');
+        if ($income) {
+            $income->status = 'deleted'; // Update the status
+            $income->save(); // Save the changes
+            return redirect()->route('income.index')->with('success', 'income updated successfully.');
+        } else {
+            return redirect()->route('income.index')->with('error', 'income not found.');
+        }
+        
     }
 }

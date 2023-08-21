@@ -10,7 +10,7 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::with('user')->orderBy('created_at', 'desc')->paginate(10); // 10 expenses per page
+        $expenses = Expense::with('user')->where('status', 'active')->orderBy('created_at', 'desc')->paginate(10); // 10 expenses per page
         $activeCategories = Category::where('status', 'active')->get();
         $totalAmount = $expenses->sum('amount');
         return view('admin.expenses', compact('expenses', 'activeCategories','totalAmount'));
@@ -80,9 +80,14 @@ class ExpenseController extends Controller
     
 
     // Remove the specified category from the database
-    public function destroy(Expense $expense)
+    public function delete(Expense $expense)
     {
-        $expense->delete();
-        return redirect()->route('expense.index')->with('success', 'Expense deleted successfully.');
+        if ($expense) {
+            $expense->status = 'deleted'; // Update the status
+            $expense->save(); // Save the changes
+            return redirect()->route('expense.index')->with('success', 'Expense updated successfully.');
+        } else {
+            return redirect()->route('expense.index')->with('error', 'Expense not found.');
+        }
     }
 }
