@@ -7,7 +7,11 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expenseModal">
         Add Expense
     </button>
-    
+    @if(session('success'))
+    <div class="alert alert-success mt-3">
+        {{ session('success') }}
+    </div>
+    @endif
   <!-- Modal -->
   <div class="modal fade" id="expenseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

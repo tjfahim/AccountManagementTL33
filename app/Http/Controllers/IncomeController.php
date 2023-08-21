@@ -84,9 +84,9 @@ class IncomeController extends Controller
         if ($income) {
             $income->status = 'deleted'; // Update the status
             $income->save(); // Save the changes
-            return redirect()->route('income.index')->with('success', 'income updated successfully.');
+            return redirect()->route('income.index')->with('success', 'Income deleted successfully.');
         } else {
-            return redirect()->route('income.index')->with('error', 'income not found.');
+            return redirect()->route('income.index')->with('success', 'Income not found.');
         }
         
     }

@@ -85,9 +85,9 @@ class ExpenseController extends Controller
         if ($expense) {
             $expense->status = 'deleted'; // Update the status
             $expense->save(); // Save the changes
-            return redirect()->route('expense.index')->with('success', 'Expense updated successfully.');
+            return redirect()->route('expense.index')->with('success', 'Expense deleted successfully.');
         } else {
-            return redirect()->route('expense.index')->with('error', 'Expense not found.');
+            return redirect()->route('expense.index')->with('success', 'Expense not found.');
         }
     }
 }
